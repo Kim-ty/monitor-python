@@ -92,9 +92,7 @@ class MonitorThreading():
         x_center = (int)(huntWrap.CLIENT_X_POSITION + (huntWrap.CLIENT_WIDTH / 2))
         y_center = (int)(huntWrap.CLIENT_Y_POSITION + (huntWrap.CLIENT_HEIGHT / 2))
 
-        block_x = 3
-        block_y = 3
-        block_area_arr = set()
+        block_area_arr = set({1,2,3,4})
         block_limit = cursor_info.attack_range*2
         #[x,y,방향] 8방좌표 시계방향
         while True:
@@ -102,7 +100,6 @@ class MonitorThreading():
                 huntWrap.is_detect = detectHunt.do_detectHunt(cursor_info)
                 if huntWrap.is_detect:
                     if self.do_hunt_detect:
-                        time.sleep(0.5)
                         if detectHunt.do_detectHunt(cursor_info):
                             self.do_hunt_detect = False
                             actionHunt(self.serial_connect)
@@ -111,12 +108,7 @@ class MonitorThreading():
                     if self.do_hunt_move :
                         if self.do_hunt_move and self.do_hunt_detect:
                             block_area = randint(1, 4)
-                            x_pos = 0
-                            y_pos = 0
-                            while (x_pos+y_pos)%2 != 0:
-                                x_pos = randint(4,block_limit)
-                                y_pos = randint(4,block_limit)
-
+                            x_pos,y_pos = cursor_info.generate_mouse_block()
                             if block_area == 2:
                                 x_pos = -x_pos
                             elif block_area == 3:
@@ -124,20 +116,16 @@ class MonitorThreading():
                                 y_pos = -y_pos
                             elif block_area == 4:
                                 y_pos = -y_pos
-                            block_area_arr.add(block_area)
-                            if len(block_area_arr) == 4:
-                                block_area_arr = set()
-                            if cursor_info.block_to_valid([block_x,block_y]):
+                            block_area_arr.discard(block_area)
+                            if len(block_area_arr) == 0:
+                                block_area_arr = set({1,2,3,4})
+                            if cursor_info.block_to_valid([x_pos,y_pos]):
                                 self.do_hunt_move = False
-                                parse_x,parse_y = cursor_info.block_to_pos([block_x,block_y])
+                                parse_x,parse_y = cursor_info.block_to_pos([x_pos,y_pos])
                                 x_position = x_center + parse_x
                                 y_position = y_center + parse_y
-                                if block_x > block_limit and block_y > block_limit:
-                                    block_x = 3
-                                    block_y = 3
-                                    block_area = 1
                                 actionMoveForTarget(self.serial_connect, x_position, y_position)
-
+                                time.sleep(0.5)
     def proccessingDetect(self,res):
         flag_cont = res[0:2]
         flag = flag_cont == '>>'

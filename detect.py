@@ -34,9 +34,11 @@ class DetectHunt():
         if cursor_info.attack_cursor is not None:
             if cursor_info.attack_cursor == info[1]:
                 return True
-            else:
+            elif cursor_info.select_cursor == info[1]:
                 return False
-
+            else :
+                cursor_info.attack_cursor = None
+                cursor_info.select_cursor = None
         hdc = win32ui.CreateDCFromHandle(win32gui.GetDC(0))
         hbmp = win32ui.CreateBitmap()
         hbmp.CreateCompatibleBitmap(hdc, 35, 35)
@@ -58,19 +60,14 @@ class DetectHunt():
 
         cursor_img = np.array(im)
         select = np.array_equal(cursor_img,cursor_info.select_np)
-        attack = np.array_equal(cursor_img, cursor_info.attack_np)
+        attack = np.array_equal(cursor_img,cursor_info.attack_np)
         if attack:
             cursor_info.attack_cursor = info[1]
         if select:
             cursor_info.select_cursor = info[1]
 
-        # try:
-        #     win32gui.DestroyIcon(info[1])
-        # except:
-        #     pass
+        # win32gui.DestroyIcon(info[1])
         win32gui.DeleteObject(hbmp.GetHandle())
         hdc.DeleteDC()
-
-
 
         return attack

@@ -3,7 +3,6 @@ import configparser
 properties = configparser.ConfigParser()
 properties.read('./config.ini',encoding='utf-8')
 
-path_config = properties['PATH']
 serial_config = properties['SERIAL_INFO']
 socket_config = properties['SOCKET_INFO']
 

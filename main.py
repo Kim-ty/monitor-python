@@ -1,15 +1,26 @@
-#pyinstaller -F --add-data "./img/*;./img" --add-data "config.ini;./" main.py
-#pyinstaller -F --add-data "./img/*;./img" --add-data "config.ini;./" main.py
+#무조건 cmd 관리자로해야함, main.spec가 있으니 1번 명령어는 필요없음.
+#1. pyinstaller -F --add-data "./img/*;./img" --add-data "config.ini;./" main.py
+#2. pyinstaller main.spec
+
+
+
 import sys
 import threading
 import time
 import os
 
-from connect.con_serial import Connect_serial
-from connect.con_socket import Connect_socket
-
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    os.chdir(sys._MEIPASS)
+    base_path = sys._MEIPASS
+    print('Running in a PyInstaller bundle')
+else:
+    base_path = os.path.abspath(".")
+    print('Running in a normal Python process')
+
+
+from connect.con_serial import Connect_serial
+# from connect.con_socket import Connect_socket
+
+
 
 from observe import BuffStatus
 from setting_model import SettingBuff
@@ -75,13 +86,13 @@ if __name__ == '__main__':
     detectBuffThread = threading.Thread(target=monitor.onLoopDetect,args=(buff_status,wrap_buff))
     huntDetectThread = threading.Thread(target=monitor.onLoopMain,args=(wrap_hunt,))
     recoverHpThread = threading.Thread(target=monitor.onLoopHealth,args=(wrap_hp,))
-    # recoverMpThread = threading.Thread(target=monitor.onLoopHealth,args=(wrap_mp,))
+    recoverMpThread = threading.Thread(target=monitor.onLoopHealth,args=(wrap_mp,))
     serialReadThread = threading.Thread(target=monitor.onLoopSerialRead, args=(con_serial.ser,))
     # socketReadThread = threading.Thread(target=monitor.onLoopSocketIoRead, args=(con_soc,))
 
     detectBuffThread.daemon = True
     recoverHpThread.daemon = True
-    # recoverMpThread.daemon = True
+    recoverMpThread.daemon = True
     serialReadThread.daemon = True
     # socketReadThread.daemon = True
 
@@ -93,7 +104,7 @@ if __name__ == '__main__':
     detectBuffThread.start()
     # #회복로직 스타트 -------------완료
     recoverHpThread.start()
-    # recoverMpThread.start()
+    recoverMpThread.start()
 
     monitor.onLoopMain(wrap_hunt)
 

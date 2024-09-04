@@ -50,40 +50,39 @@ void keyboardUsemagic(int key) {
 
 void mouseMove(long x, long y) {
   
-  // int x_move = abs(x/25);
-  // int y_move = abs(y/25);
-  // int r_x = 0;
-  // int r_y = 0;
-  // int r_loop = 0;
-  // int l_data = 0;
-  // int isNegX = (0>x)?-1:1;
-  // int isNegY = (0>y)?-1:1;
-  // int x_move_s = isNegX*25;
-  // int y_move_s = isNegY*25;
+  int x_move = abs(x/25);
+  int y_move = abs(y/25);
+  int r_x = 0;
+  int r_y = 0;
+  int r_loop = 0;
+  int l_data = 0;
+  int isNegX = (0>x)?-1:1;
+  int isNegY = (0>y)?-1:1;
+  int x_move_s = isNegX*25;
+  int y_move_s = isNegY*25;
 
 
-  // if(x_move > y_move){
-  //   r_x = 1;
-  //   r_loop = x_move - y_move;
-  //   l_data = y_move;
-  // }else{
-  //   r_y = 1;
-  //   r_loop = y_move - x_move;
-  //   l_data = x_move;
-  // }
+  if(x_move > y_move){
+    r_x = 1;
+    r_loop = x_move - y_move;
+    l_data = y_move;
+  }else{
+    r_y = 1;
+    r_loop = y_move - x_move;
+    l_data = x_move;
+  }
 
-  // for(int i=0;i<l_data;i++){
-  //   Mouse.move(x_move_s,y_move_s,0);
-  //   delay(1);
-  // }
+  for(int i=0;i<l_data;i++){
+    Mouse.move(x_move_s,y_move_s,0);
+    delay(1);
+  }
 
-  // for(int i=0;i<r_loop;i++){
-  //   Mouse.move(x_move_s*r_x,y_move_s*r_y,0);
-  //   delay(1);
-  // }
+  for(int i=0;i<r_loop;i++){
+    Mouse.move(x_move_s*r_x,y_move_s*r_y,0);
+    delay(1);
+  }
 
-  // Mouse.move(x%25,y%25,0);
-  Mouse.move(x,y,0);
+  Mouse.move(x%25,y%25,0);
   delay(1);
   Serial.println((String) "mouse move : ["+ x + ","+y+"]");
   Serial.println((String)">>|move");

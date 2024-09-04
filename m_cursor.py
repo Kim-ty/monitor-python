@@ -1,3 +1,5 @@
+from random import randint
+
 import numpy
 from PIL import Image
 
@@ -29,8 +31,13 @@ class M_cursor:
     #x+y가 홀수면 탈락 attack_range를 *2 하여 마름모의 절반 단위로 계산
     def block_to_pos(self,block_arr):
         x_pos,y_pos = block_arr
-        if (abs(x_pos)+abs(y_pos))%2 !=0:
-            x_pos -= 1
 
         return [x_pos*40,y_pos*20]
 
+    def generate_mouse_block(self):
+        block_limit = self.attack_range * 2
+        while True:
+            x_pos = randint(2, self.attack_range*2)
+            y_pos = randint(2, self.attack_range*2)
+            if block_limit >= x_pos+y_pos and (x_pos+y_pos)%2 == 0:
+                return [x_pos,y_pos]

@@ -91,18 +91,11 @@ class MonitorThreading():
         detectHunt = DetectHunt()
         x_center = (int)(huntWrap.CLIENT_X_POSITION + (huntWrap.CLIENT_WIDTH / 2))
         y_center = (int)(huntWrap.CLIENT_Y_POSITION + (huntWrap.CLIENT_HEIGHT / 2))
-        center = [x_center,y_center]
-        detect_wrap = [550,410]
-        x_limit,y_limit = detect_wrap
-        x_center,y_center = center
 
-        block = 60
-
-        block_x = 1
-        block_y = 1
-        block_area = 1
-        block_x_limit = int(x_limit/block)+1
-        block_y_limit = int(y_limit/block)+1
+        block_x = 3
+        block_y = 3
+        block_area_arr = set()
+        block_limit = cursor_info.attack_range*2
         #[x,y,방향] 8방좌표 시계방향
         while True:
             if self.setting_buff.useHunt:
@@ -113,37 +106,37 @@ class MonitorThreading():
                         if detectHunt.do_detectHunt(cursor_info):
                             self.do_hunt_detect = False
                             actionHunt(self.serial_connect)
-                            current_x, current_y = pyautogui.position()
-                            if (not ((detect_wrap[0] + x_center) < current_x < (detect_wrap[0] - x_center)) or
-                                    not ((detect_wrap[1] + y_center) < current_x < (detect_wrap[1] - y_center))):
-                                block_x = 1
-                                block_y = 1
-                                block_area = 1
                             self.randomPause(1.0, 1.5)
                 else :
                     if self.do_hunt_move :
                         if self.do_hunt_move and self.do_hunt_detect:
-                            self.do_hunt_move = False
-                            if (abs(block_x) == abs(block_y)) and block_area == 4:
-                                block_x += 1
-                            else:
-                                if block_area == 1:
-                                    block_x -= 1
-                                elif block_area == 2:
-                                    block_y -= 1
-                                elif block_area == 3:
-                                    block_x += 1
-                                elif block_area == 4:
-                                    block_y += 1
-                                if abs(block_x) == abs(block_y): block_area += 1
-                                if block_area == 5: block_area = 1
-                            x_position = x_center + (block_x * block)
-                            y_position = y_center + (block_y * block)
-                            if block_x > block_x_limit and block_y > block_y_limit:
-                                block_x = 1
-                                block_y = 1
-                                block_area = 1
-                            actionMoveForTarget(self.serial_connect, x_position, y_position)
+                            block_area = randint(1, 4)
+                            x_pos = 0
+                            y_pos = 0
+                            while (x_pos+y_pos)%2 != 0:
+                                x_pos = randint(4,block_limit)
+                                y_pos = randint(4,block_limit)
+
+                            if block_area == 2:
+                                x_pos = -x_pos
+                            elif block_area == 3:
+                                x_pos = -x_pos
+                                y_pos = -y_pos
+                            elif block_area == 4:
+                                y_pos = -y_pos
+                            block_area_arr.add(block_area)
+                            if len(block_area_arr) == 4:
+                                block_area_arr = set()
+                            if cursor_info.block_to_valid([block_x,block_y]):
+                                self.do_hunt_move = False
+                                parse_x,parse_y = cursor_info.block_to_pos([block_x,block_y])
+                                x_position = x_center + parse_x
+                                y_position = y_center + parse_y
+                                if block_x > block_limit and block_y > block_limit:
+                                    block_x = 3
+                                    block_y = 3
+                                    block_area = 1
+                                actionMoveForTarget(self.serial_connect, x_position, y_position)
 
     def proccessingDetect(self,res):
         flag_cont = res[0:2]

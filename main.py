@@ -53,6 +53,11 @@ if __name__ == '__main__':
 
     # 선언부
     client = Client()
+
+    if(client.CLIENT_WIDTH == 0 or client.CLIENT_HEIGHT == 0):
+        print('클라를 탐지하지 못했습니다.')
+        sys.exit()
+
     con_serial = Connect_serial()
     # con_soc = Connect_socket()
     setting_buff = SettingBuff(buff_list)
@@ -70,13 +75,13 @@ if __name__ == '__main__':
     detectBuffThread = threading.Thread(target=monitor.onLoopDetect,args=(buff_status,wrap_buff))
     huntDetectThread = threading.Thread(target=monitor.onLoopMain,args=(wrap_hunt,))
     recoverHpThread = threading.Thread(target=monitor.onLoopHealth,args=(wrap_hp,))
-    recoverMpThread = threading.Thread(target=monitor.onLoopHealth,args=(wrap_mp,))
+    # recoverMpThread = threading.Thread(target=monitor.onLoopHealth,args=(wrap_mp,))
     serialReadThread = threading.Thread(target=monitor.onLoopSerialRead, args=(con_serial.ser,))
     # socketReadThread = threading.Thread(target=monitor.onLoopSocketIoRead, args=(con_soc,))
 
     detectBuffThread.daemon = True
     recoverHpThread.daemon = True
-    recoverMpThread.daemon = True
+    # recoverMpThread.daemon = True
     serialReadThread.daemon = True
     # socketReadThread.daemon = True
 
@@ -88,7 +93,7 @@ if __name__ == '__main__':
     detectBuffThread.start()
     # #회복로직 스타트 -------------완료
     recoverHpThread.start()
-    recoverMpThread.start()
+    # recoverMpThread.start()
 
     monitor.onLoopMain(wrap_hunt)
 

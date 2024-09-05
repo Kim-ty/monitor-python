@@ -3,6 +3,7 @@ from random import randint
 import numpy
 from PIL import Image
 
+from config import max_attack_range, min_attack_range
 
 
 class M_cursor:
@@ -10,7 +11,8 @@ class M_cursor:
     attack_cursor = None
     select_cursor = None
     #본인포함
-    attack_range = 4
+    attack_range = max_attack_range
+    min_attack_range = min_attack_range
 
 
     def __init__(self):
@@ -39,5 +41,5 @@ class M_cursor:
         while True:
             x_pos = randint(2, self.attack_range*2)
             y_pos = randint(2, self.attack_range*2)
-            if block_limit >= x_pos+y_pos and (x_pos+y_pos)%2 == 0:
+            if min_attack_range < x_pos+y_pos <= block_limit and (x_pos+y_pos)%2 == 0:
                 return [x_pos,y_pos]

@@ -4,6 +4,7 @@ from random import randint
 import pyautogui
 
 from action import actionHealth, actionHunt, actionMoveForTarget
+from config import use_auto_move
 from detect import detectBuff, detectHealth, DetectHunt
 from m_cursor import M_cursor
 
@@ -92,7 +93,7 @@ class MonitorThreading():
         x_center = (int)(huntWrap.CLIENT_X_POSITION + (huntWrap.CLIENT_WIDTH / 2))
         y_center = (int)(huntWrap.CLIENT_Y_POSITION + (huntWrap.CLIENT_HEIGHT / 2))
 
-        block_area_arr = set({1,2,3,4})
+        block_area_arr = {1, 2, 3, 4}
         block_limit = cursor_info.attack_range*2
         #[x,y,방향] 8방좌표 시계방향
         while True:
@@ -105,7 +106,7 @@ class MonitorThreading():
                             actionHunt(self.serial_connect)
                             self.randomPause(1.0, 1.5)
                 else :
-                    if self.do_hunt_move :
+                    if self.do_hunt_move and use_auto_move:
                         if self.do_hunt_move and self.do_hunt_detect:
                             block_area = randint(1, 4)
                             x_pos,y_pos = cursor_info.generate_mouse_block()
@@ -118,7 +119,8 @@ class MonitorThreading():
                                 y_pos = -y_pos
                             block_area_arr.discard(block_area)
                             if len(block_area_arr) == 0:
-                                block_area_arr = set({1,2,3,4})
+                                block_area_arr = {1, 2, 3, 4}
+                                block_area_arr.discard(block_area)
                             if cursor_info.block_to_valid([x_pos,y_pos]):
                                 self.do_hunt_move = False
                                 parse_x,parse_y = cursor_info.block_to_pos([x_pos,y_pos])

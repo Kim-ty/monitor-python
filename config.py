@@ -15,3 +15,4 @@ socket_host = socket_config['host']
 
 max_attack_range = hunt_config['max_attack_range']
 min_attack_range = hunt_config['min_attack_range']
+use_auto_move = hunt_config['use_auto_move']

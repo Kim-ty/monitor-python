@@ -38,6 +38,7 @@ class M_cursor:
 
     def generate_mouse_block(self):
         block_limit = self.attack_range * 2
+        block_min_limit = self.min_attack_range * 2
         while True:
             x_pos = randint(2, self.attack_range*2)
             y_pos = randint(2, self.attack_range*2)
